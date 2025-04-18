@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+    UserMapper.xml
+    定义UserMapper接口中方法的SQL实现
+    用于对users表进行增删改查操作
+-->
+<mapper namespace="com.couple.space.mapper.UserMapper">
+    <!-- 
+        结果映射配置
+        定义数据库字段和Java对象属性之间的映射关系
+        id: 映射的唯一标识
+        type: 映射的Java类型
+    -->
+    <resultMap id="BaseResultMap" type="com.couple.space.entity.User">
+        <!-- 主键映射 -->
+        <id column="id" property="id" />
+        <!-- 普通字段映射 -->
+        <result column="username" property="username" />
+        <result column="password" property="password" />
+        <result column="created_at" property="createdAt" />
+        <result column="updated_at" property="updatedAt" />
+    </resultMap>
+
+    <!-- 
+        根据用户名查询用户
+        id: 对应UserMapper接口中的方法名
+        resultMap: 使用上面定义的结果映射
+    -->
+    <select id="findByUsername" resultMap="BaseResultMap">
+        SELECT * FROM users WHERE username = #{username}
+    </select>
+
+    <!-- 
+        检查用户名是否存在
+        id: 对应UserMapper接口中的方法名
+        resultType: 返回类型为int
+    -->
+    <select id="existsByUsername" resultType="int">
+        SELECT COUNT(*) FROM users WHERE username = #{username}
+    </select>
+
+    <!-- 
+        插入新用户
+        id: 对应UserMapper接口中的方法名
+        parameterType: 参数类型
+        useGeneratedKeys: 使用数据库自增主键
+        keyProperty: 主键属性名
+    -->
+    <insert id="insert" parameterType="com.couple.space.entity.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO users (username, password, created_at, updated_at)
+        VALUES (#{username}, #{password}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <!-- 
+        更新用户信息
+        id: 对应UserMapper接口中的方法名
+        parameterType: 参数类型
+    -->
+    <update id="update" parameterType="com.couple.space.entity.User">
+        UPDATE users
+        SET username = #{username},
+            password = #{password},
+            updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
+</mapper> 

@@ -1,0 +1,39 @@
+# 服务器配置
+server:
+  port: 8080  # 服务器端口号
+
+spring:
+  datasource:
+    url: jdbc:mysql://101.35.234.43:3306/testDb?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true  # 数据库连接URL
+    username: zyz  # 数据库用户名
+    password: 123521Yao! # 数据库密码
+    driver-class-name: com.mysql.cj.jdbc.Driver  # 数据库驱动类名
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 10
+  security:
+    user:
+      name: admin
+      password: admin
+
+# MyBatis配置
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true  # 开启驼峰命名转换
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl  # 使用SLF4J日志实现
+  mapper-locations: classpath:mapper/*.xml  # MyBatis映射文件位置
+  type-aliases-package: com.couple.space.entity  # 实体类包名
+
+logging:
+  level:
+    com.couple.space: INFO  # 设置项目日志级别为INFO
+    org.springframework: INFO  # 设置Spring框架日志级别为INFO
+    org.springframework.boot: INFO
+    com.zaxxer.hikari: INFO
+
+# 跨域配置
+cors:
+  allowed-origins: "*"  # 允许所有来源
+  allowed-methods: "*"  # 允许所有方法
+  allowed-headers: "*"  # 允许所有请求头
+  allow-credentials: true  # 允许携带凭证 
