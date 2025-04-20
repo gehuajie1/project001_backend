@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.couple.space.mapper.AnniversaryMapper">
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="com.couple.space.entity.Anniversary">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="name" property="name" />
+        <result column="date" property="date" />
+        <result column="description" property="description" />
+        <result column="remind" property="remind" />
+        <result column="remind_time" property="remindTime" />
+        <result column="created_at" property="createdAt" />
+        <result column="updated_at" property="updatedAt" />
+    </resultMap>
+
+    <!-- 根据ID查询纪念日 -->
+    <select id="findById" resultMap="BaseResultMap">
+        SELECT * FROM anniversaries WHERE id = #{id}
+    </select>
+
+    <!-- 根据用户ID查询所有纪念日 -->
+    <select id="findByUserId" resultMap="BaseResultMap">
+        SELECT * FROM anniversaries WHERE user_id = #{userId}
+    </select>
+
+    <!-- 插入新纪念日 -->
+    <insert id="insert" parameterType="com.couple.space.entity.Anniversary" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO anniversaries (
+            user_id, name, date, description, remind, remind_time, created_at, updated_at
+        ) VALUES (
+            #{userId}, #{name}, #{date}, #{description}, #{remind}, #{remindTime}, 
+            #{createdAt}, #{updatedAt}
+        )
+    </insert>
+
+    <!-- 更新纪念日信息 -->
+    <update id="update" parameterType="com.couple.space.entity.Anniversary">
+        UPDATE anniversaries
+        SET name = #{name},
+            date = #{date},
+            description = #{description},
+            remind = #{remind},
+            remind_time = #{remindTime},
+            updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除纪念日 -->
+    <delete id="delete">
+        DELETE FROM anniversaries WHERE id = #{id}
+    </delete>
+</mapper> 

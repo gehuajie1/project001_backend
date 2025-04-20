@@ -7,12 +7,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpMethod;
 
 import java.util.Arrays;
 
@@ -44,20 +45,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     /**
-     * 配置密码编码器
-     * 使用BCrypt算法进行密码加密
-     * BCrypt特点：
-     * 1. 自动加盐
-     * 2. 可配置的加密强度
-     * 3. 抗彩虹表攻击
-     * @return BCryptPasswordEncoder实例
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    /**
      * 配置跨域设置
      * 允许：
      * 1. 所有来源的请求
@@ -69,13 +56,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));  // 允许所有来源
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));  // 允许所有方法
-        configuration.setAllowedHeaders(Arrays.asList("*"));  // 允许所有请求头
-        configuration.setAllowCredentials(true);  // 允许携带凭证
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(false);
+        configuration.setMaxAge(3600L);
+        
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);  // 对所有路径生效
+        source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     /**
@@ -93,11 +87,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-            .csrf().disable()  // 禁用CSRF保护
             .cors().configurationSource(corsConfigurationSource())  // 配置跨域
             .and()
+            .csrf().disable()  // 禁用CSRF保护
             .authorizeRequests()
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()  // 允许所有OPTIONS请求
                 .antMatchers("/api/users/register", "/api/users/login").permitAll()  // 允许注册和登录
+                .antMatchers("/api/weather/**").permitAll()  // 允许天气接口的访问
+                .antMatchers("/api/anniversary/**").permitAll()  // 允许纪念日接口的访问
                 .anyRequest().authenticated()  // 其他请求需要认证
             .and()
             .httpBasic().disable()  // 禁用HTTP Basic认证

@@ -5,11 +5,11 @@ import com.couple.space.mapper.UserMapper;
 import com.couple.space.service.UserService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -20,11 +20,9 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserMapper userMapper, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserMapper userMapper) {
         this.userMapper = userMapper;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -49,35 +47,38 @@ public class UserServiceImpl implements UserService {
         
         user.setCreatedAt(java.time.LocalDateTime.now());
         user.setUpdatedAt(java.time.LocalDateTime.now());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        
+        // log.info("用户注册 - 用户名: {}, 加密后密码: {}", 
+        //     user.getUsername(), user.getPassword());
         
         userMapper.insert(user);
         return user;
     }
 
     @Override
-    public Optional<User> login(String username, String password) {
-        log.info("尝试登录用户: {}", username);
+    public Optional<User> login(String username, String encryptedPassword) {
+        // log.info("尝试登录用户: {}", username);
         try {
             User user = userMapper.findByUsername(username);
-            log.info("查询用户结果: {}", user != null ? "找到用户" : "用户不存在");
+            // log.info("查询用户结果: {}", user != null ? "找到用户" : "用户不存在");
             
             if (user != null) {
-                log.info("开始验证密码");
-                boolean passwordMatches = passwordEncoder.matches(password, user.getPassword());
-                log.info("密码验证结果: {}", passwordMatches ? "成功" : "失败");
+                // log.info("开始验证密码 - 前端加密密码: {}, 数据库密码: {}", encryptedPassword, user.getPassword());
+                // 直接比较前端传来的加密密码和数据库中存储的密码
+                boolean passwordMatches = encryptedPassword.equals(user.getPassword());
+                // log.info("密码验证结果: {}", passwordMatches ? "成功" : "失败");
                 
                 if (passwordMatches) {
-                    log.info("用户 {} 登录成功", username);
+                    // log.info("用户 {} 登录成功", username);
                     return Optional.of(user);
                 } else {
-                    log.warn("用户 {} 密码验证失败", username);
+                    // log.warn("用户 {} 密码验证失败", username);
                 }
             } else {
-                log.warn("用户 {} 不存在", username);
+                // log.warn("用户 {} 不存在", username);
             }
         } catch (Exception e) {
-            log.error("用户 {} 登录过程中发生错误: {}", username, e.getMessage(), e);
+            // log.error("用户 {} 登录过程中发生错误: {}", username, e.getMessage(), e);
             throw e;
         }
         
@@ -87,5 +88,31 @@ public class UserServiceImpl implements UserService {
     @Override
     public int existsByUsername(String username) {
         return userMapper.existsByUsername(username);
+    }
+
+    @Override
+    @Transactional
+    public int updateAllUserPasswords(String newPassword) {
+        // log.info("开始更新所有用户的密码");
+        // 获取所有用户
+        List<User> users = userMapper.findAll();
+        int updatedCount = 0;
+        
+        for (User user : users) {
+            try {
+                // 更新用户密码（直接使用前端加密后的密码）
+                user.setPassword(newPassword);
+                user.setUpdatedAt(java.time.LocalDateTime.now());
+                userMapper.update(user);
+                updatedCount++;
+                
+                // log.info("已更新用户 {} 的密码", user.getUsername());
+            } catch (Exception e) {
+                // log.error("更新用户 {} 密码失败: {}", user.getUsername(), e.getMessage());
+            }
+        }
+        
+        // log.info("密码更新完成，共更新 {} 个用户", updatedCount);
+        return updatedCount;
     }
 } 

@@ -76,7 +76,7 @@ public class UserController {
      */
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<UserDTO>> login(@RequestBody User user) {
-        log.info("收到用户登录请求: {}", user.getUsername());
+        //log.info("收到用户登录请求: {}", user.getUsername());
         try {
             // 调用服务层进行登录验证
             Optional<User> result = userService.login(user.getUsername(), user.getPassword());

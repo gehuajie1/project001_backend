@@ -32,8 +32,15 @@ public interface UserService extends UserDetailsService {
     /**
      * 用户登录
      * @param username 用户名
-     * @param password 密码
+     * @param encryptedPassword 前端加密后的密码
      * @return 登录成功的用户信息，如果登录失败返回空
      */
-    Optional<User> login(String username, String password);
+    Optional<User> login(String username, String encryptedPassword);
+
+    /**
+     * 更新所有用户的密码
+     * @param newPassword 新的密码（前端已经加密）
+     * @return 更新的用户数量
+     */
+    int updateAllUserPasswords(String newPassword);
 } 

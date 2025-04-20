@@ -33,8 +33,7 @@ public class User {
     
     /**
      * 密码
-     * 存储加密后的密码
-     * 使用BCrypt算法加密
+     * 存储前端加密后的密码
      * 在数据库中不能为空
      */
     private String password;

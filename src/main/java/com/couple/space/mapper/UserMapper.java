@@ -3,6 +3,8 @@ package com.couple.space.mapper;
 import com.couple.space.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * 用户数据访问接口
  * 定义与users表相关的数据库操作
@@ -37,4 +39,10 @@ public interface UserMapper {
      * @return 影响的行数
      */
     int update(User user);
+
+    /**
+     * 获取所有用户
+     * @return 用户列表
+     */
+    List<User> findAll();
 } 

@@ -64,4 +64,13 @@
             updated_at = #{updatedAt}
         WHERE id = #{id}
     </update>
+
+    <!-- 
+        获取所有用户
+        id: 对应UserMapper接口中的方法名
+        resultMap: 使用上面定义的结果映射
+    -->
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT * FROM users
+    </select>
 </mapper> 

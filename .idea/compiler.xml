@@ -7,6 +7,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="project001_backend" />
         <module name="project001-backend" />
         <module name="space" />
       </profile>
@@ -15,6 +16,7 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="project001-backend" options="-parameters" />
+      <module name="project001_backend" options="-parameters" />
       <module name="space" options="-parameters" />
     </option>
   </component>

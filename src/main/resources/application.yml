@@ -26,14 +26,21 @@ mybatis:
 
 logging:
   level:
+    root: INFO
     com.couple.space: INFO  # 设置项目日志级别为INFO
     org.springframework: INFO  # 设置Spring框架日志级别为INFO
     org.springframework.boot: INFO
     com.zaxxer.hikari: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/application.log
 
 # 跨域配置
 cors:
   allowed-origins: "*"  # 允许所有来源
   allowed-methods: "*"  # 允许所有方法
   allowed-headers: "*"  # 允许所有请求头
-  allow-credentials: true  # 允许携带凭证 
+  allow-credentials: true  # 允许携带凭证
+  max-age: 3600  # 预检请求的有效期，单位为秒 
