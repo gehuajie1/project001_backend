@@ -120,12 +120,12 @@ public class AnniversaryController {
     }
 
     @GetMapping("/next")
-    public ResponseEntity<ApiResponse<NextAnniversaryDTO>> getNextAnniversary(@RequestParam Long userId) {
-        log.info("获取用户 {} 的下一个纪念日", userId);
+    public ResponseEntity<ApiResponse<NextAnniversaryDTO>> getNextAnniversary() {
+        log.info("获取下一个纪念日");
         
-        List<Anniversary> anniversaries = anniversaryService.getAnniversariesByUserId(userId);
+        List<Anniversary> anniversaries = anniversaryService.getAllAnniversaries();
         if (anniversaries.isEmpty()) {
-            log.info("用户 {} 没有设置任何纪念日", userId);
+            log.info("没有设置任何纪念日");
             return ResponseHandler.success(null);
         }
 
@@ -135,13 +135,14 @@ public class AnniversaryController {
 
         for (Anniversary anniversary : anniversaries) {
             LocalDate anniversaryDate = anniversary.getDate();
-            // 计算距离下一个纪念日的天数
-            long daysUntil = ChronoUnit.DAYS.between(today, anniversaryDate);
-            // 如果纪念日已经过去，计算下一年的天数
-            if (daysUntil < 0) {
-                anniversaryDate = anniversaryDate.plusYears(1);
-                daysUntil = ChronoUnit.DAYS.between(today, anniversaryDate);
+            LocalDate thisYearAnniversary = LocalDate.of(today.getYear(), anniversaryDate.getMonth(), anniversaryDate.getDayOfMonth());
+            
+            // 如果今年的纪念日已经过去，计算到明年的纪念日
+            if (thisYearAnniversary.isBefore(today)) {
+                thisYearAnniversary = thisYearAnniversary.plusYears(1);
             }
+            
+            long daysUntil = ChronoUnit.DAYS.between(today, thisYearAnniversary);
             
             if (daysUntil < minDaysUntil) {
                 minDaysUntil = daysUntil;
@@ -150,19 +151,16 @@ public class AnniversaryController {
         }
 
         if (nextAnniversary == null) {
-            log.info("未能找到用户 {} 的下一个纪念日", userId);
+            log.info("未能找到下一个纪念日");
             return ResponseHandler.success(null);
         }
 
         NextAnniversaryDTO dto = new NextAnniversaryDTO();
-        dto.setId(nextAnniversary.getId());
         dto.setName(nextAnniversary.getName());
-        dto.setDate(nextAnniversary.getDate());
-        dto.setDaysUntil(minDaysUntil);
-        dto.setDescription(nextAnniversary.getDescription());
+        dto.setDay(minDaysUntil);
 
-        log.info("找到用户 {} 的下一个纪念日: {}, 距离还有 {} 天", 
-            userId, nextAnniversary.getName(), minDaysUntil);
+        log.info("找到下一个纪念日: {}, 距离还有 {} 天", 
+            nextAnniversary.getName(), minDaysUntil);
         
         return ResponseHandler.success(dto);
     }

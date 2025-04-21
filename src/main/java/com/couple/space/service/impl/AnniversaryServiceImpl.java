@@ -3,6 +3,7 @@ package com.couple.space.service.impl;
 import com.couple.space.entity.Anniversary;
 import com.couple.space.mapper.AnniversaryMapper;
 import com.couple.space.service.AnniversaryService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,12 +16,9 @@ import java.util.List;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AnniversaryServiceImpl implements AnniversaryService {
     private final AnniversaryMapper anniversaryMapper;
-
-    public AnniversaryServiceImpl(AnniversaryMapper anniversaryMapper) {
-        this.anniversaryMapper = anniversaryMapper;
-    }
 
     @Override
     @Transactional
@@ -28,8 +26,9 @@ public class AnniversaryServiceImpl implements AnniversaryService {
         log.info("创建纪念日: {}", anniversary.getName());
         
         // 设置创建时间和更新时间
-        anniversary.setCreatedAt(LocalDate.now());
-        anniversary.setUpdatedAt(LocalDate.now());
+        LocalDate now = LocalDate.now();
+        anniversary.setCreatedAt(now);
+        anniversary.setUpdatedAt(now);
         
         // 插入数据库
         anniversaryMapper.insert(anniversary);
@@ -87,5 +86,17 @@ public class AnniversaryServiceImpl implements AnniversaryService {
         
         log.info("查询到 {} 个纪念日", anniversaries.size());
         return anniversaries;
+    }
+
+    @Override
+    public Anniversary getNextAnniversary() {
+        log.info("查询下一个即将到来的纪念日");
+        return anniversaryMapper.findNextAnniversary();
+    }
+
+    @Override
+    public List<Anniversary> getAllAnniversaries() {
+        log.info("获取所有纪念日");
+        return anniversaryMapper.findAll();
     }
 } 

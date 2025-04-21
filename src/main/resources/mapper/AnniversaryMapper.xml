@@ -12,16 +12,73 @@
         <result column="remind_time" property="remindTime" />
         <result column="created_at" property="createdAt" />
         <result column="updated_at" property="updatedAt" />
+        <result column="days_remaining" property="daysRemaining" />
     </resultMap>
 
     <!-- 根据ID查询纪念日 -->
     <select id="findById" resultMap="BaseResultMap">
-        SELECT * FROM anniversaries WHERE id = #{id}
+        SELECT 
+            *,
+            DATEDIFF(
+                CASE 
+                    WHEN DATE_FORMAT(date, '%m-%d') >= DATE_FORMAT(CURDATE(), '%m-%d')
+                    THEN CONCAT(YEAR(CURDATE()), '-', DATE_FORMAT(date, '%m-%d'))
+                    ELSE CONCAT(YEAR(CURDATE()) + 1, '-', DATE_FORMAT(date, '%m-%d'))
+                END,
+                CURDATE()
+            ) as days_remaining
+        FROM anniversaries 
+        WHERE id = #{id}
     </select>
 
     <!-- 根据用户ID查询所有纪念日 -->
     <select id="findByUserId" resultMap="BaseResultMap">
-        SELECT * FROM anniversaries WHERE user_id = #{userId}
+        SELECT 
+            *,
+            DATEDIFF(
+                CASE 
+                    WHEN DATE_FORMAT(date, '%m-%d') >= DATE_FORMAT(CURDATE(), '%m-%d')
+                    THEN CONCAT(YEAR(CURDATE()), '-', DATE_FORMAT(date, '%m-%d'))
+                    ELSE CONCAT(YEAR(CURDATE()) + 1, '-', DATE_FORMAT(date, '%m-%d'))
+                END,
+                CURDATE()
+            ) as days_remaining
+        FROM anniversaries 
+        WHERE user_id = #{userId}
+        ORDER BY days_remaining ASC
+    </select>
+
+    <!-- 查询下一个即将到来的纪念日 -->
+    <select id="findNextAnniversary" resultMap="BaseResultMap">
+        SELECT 
+            *,
+            DATEDIFF(
+                CASE 
+                    WHEN DATE_FORMAT(date, '%m-%d') >= DATE_FORMAT(CURDATE(), '%m-%d')
+                    THEN CONCAT(YEAR(CURDATE()), '-', DATE_FORMAT(date, '%m-%d'))
+                    ELSE CONCAT(YEAR(CURDATE()) + 1, '-', DATE_FORMAT(date, '%m-%d'))
+                END,
+                CURDATE()
+            ) as days_remaining
+        FROM anniversaries 
+        ORDER BY days_remaining ASC
+        LIMIT 1
+    </select>
+
+    <!-- 查询所有纪念日 -->
+    <select id="findAll" resultMap="BaseResultMap">
+        SELECT 
+            *,
+            DATEDIFF(
+                CASE 
+                    WHEN DATE_FORMAT(date, '%m-%d') >= DATE_FORMAT(CURDATE(), '%m-%d')
+                    THEN CONCAT(YEAR(CURDATE()), '-', DATE_FORMAT(date, '%m-%d'))
+                    ELSE CONCAT(YEAR(CURDATE()) + 1, '-', DATE_FORMAT(date, '%m-%d'))
+                END,
+                CURDATE()
+            ) as days_remaining
+        FROM anniversaries
+        ORDER BY days_remaining ASC
     </select>
 
     <!-- 插入新纪念日 -->

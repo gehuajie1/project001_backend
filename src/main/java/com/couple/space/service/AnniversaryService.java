@@ -41,4 +41,16 @@ public interface AnniversaryService {
      * @return 纪念日列表
      */
     List<Anniversary> getAnniversariesByUserId(Long userId);
+
+    /**
+     * 查询下一个即将到来的纪念日
+     * @return 下一个纪念日对象
+     */
+    Anniversary getNextAnniversary();
+
+    /**
+     * 获取所有纪念日
+     * @return 纪念日列表
+     */
+    List<Anniversary> getAllAnniversaries();
 } 

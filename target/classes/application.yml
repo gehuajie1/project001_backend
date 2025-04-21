@@ -1,6 +1,6 @@
 # 服务器配置
 server:
-  port: 8080  # 服务器端口号
+  port: 8088  # 服务器端口号
 
 spring:
   datasource:

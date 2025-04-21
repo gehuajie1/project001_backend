@@ -2,6 +2,7 @@ package com.couple.space.entity;
 
 import lombok.Data;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * 纪念日实体类
@@ -52,7 +53,7 @@ public class Anniversary {
      * 格式：HH:mm
      * 例如：09:00
      */
-    private String remindTime;
+    private LocalDateTime remindTime;
     
     /**
      * 创建时间
@@ -63,4 +64,9 @@ public class Anniversary {
      * 更新时间
      */
     private LocalDate updatedAt;
+    
+    /**
+     * 距离今天还有多少天
+     */
+    private Integer daysRemaining;
 } 
