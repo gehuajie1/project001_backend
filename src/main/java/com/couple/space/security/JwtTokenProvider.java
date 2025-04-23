@@ -20,6 +20,13 @@ import java.util.Date;
 public class JwtTokenProvider {
     /**
      * JWT签名密钥
+     * 使用一个足够长的随机字符串作为密钥
+     * 注意：在实际生产环境中，应该从配置文件中读取
+     */
+    private static final String SECRET_KEY = "your-secret-key-must-be-at-least-256-bits-long-for-HS256";
+    
+    /**
+     * JWT签名密钥
      * 用于：
      * - 签名JWT令牌
      * - 验证JWT令牌
@@ -34,11 +41,10 @@ public class JwtTokenProvider {
     private static final long JWT_EXPIRATION = 86400000;
 
     /**
-     * 构造函数，注入依赖
-     * @param jwtSigningKey JWT签名密钥
+     * 构造函数
      */
-    public JwtTokenProvider(Key jwtSigningKey) {
-        this.jwtSigningKey = jwtSigningKey;
+    public JwtTokenProvider() {
+        this.jwtSigningKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
     /**

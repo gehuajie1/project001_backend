@@ -5,11 +5,17 @@ import com.couple.space.dto.ApiResponse;
 import com.couple.space.entity.User;
 import com.couple.space.service.UserService;
 import com.couple.space.common.ResponseHandler;
+import com.couple.space.security.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import java.util.Optional;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  * 用户控制器
@@ -30,13 +36,21 @@ public class UserController {
      * - 用户认证
      */
     private final UserService userService;
+    
+    /**
+     * JWT令牌提供者
+     * 用于生成和验证JWT令牌
+     */
+    private final JwtTokenProvider jwtTokenProvider;
 
     /**
      * 构造函数，注入依赖
      * @param userService 用户服务
+     * @param jwtTokenProvider JWT令牌提供者
      */
-    public UserController(UserService userService) {
+    public UserController(UserService userService, JwtTokenProvider jwtTokenProvider) {
         this.userService = userService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
     
     /**
@@ -75,8 +89,7 @@ public class UserController {
      * @return 登录结果，包含成功/失败状态和消息
      */
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<UserDTO>> login(@RequestBody User user) {
-        //log.info("收到用户登录请求: {}", user.getUsername());
+    public ResponseEntity<ApiResponse<Map<String, Object>>> login(@RequestBody User user) {
         try {
             // 调用服务层进行登录验证
             Optional<User> result = userService.login(user.getUsername(), user.getPassword());
@@ -84,10 +97,39 @@ public class UserController {
             if (result.isPresent()) {
                 // 登录成功
                 User loggedInUser = result.get();
-                // 转换为DTO对象
-                UserDTO userDTO = convertToDTO(loggedInUser);
+                
+                // 创建UserDetails对象
+                UserDetails userDetails = new org.springframework.security.core.userdetails.User(
+                    loggedInUser.getUsername(),
+                    loggedInUser.getPassword(),
+                    new ArrayList<>()
+                );
+                
+                // 创建Authentication对象
+                Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    userDetails,
+                    null,
+                    userDetails.getAuthorities()
+                );
+                
+                // 生成JWT token
+                String token = jwtTokenProvider.generateToken(authentication);
+                
+                // 构建响应数据
+                Map<String, Object> responseData = new HashMap<>();
+                responseData.put("token", token);
+                
+                // 构建用户信息对象
+                Map<String, Object> userInfo = new HashMap<>();
+                userInfo.put("id", loggedInUser.getId());
+                userInfo.put("username", loggedInUser.getUsername());
+                userInfo.put("createdAt", loggedInUser.getCreatedAt());
+                userInfo.put("updatedAt", loggedInUser.getUpdatedAt());
+                
+                responseData.put("userInfo", userInfo);
+                
                 // 返回成功响应
-                return ResponseHandler.success(userDTO);
+                return ResponseHandler.success(responseData);
             } else {
                 // 登录失败
                 log.warn("用户登录失败: {}", user.getUsername());

@@ -42,6 +42,20 @@ public class Anniversary {
     private String description;
     
     /**
+     * 是否每年重复
+     * true: 每年重复
+     * false: 不重复
+     */
+    private Boolean isYearly;
+    
+    /**
+     * 是否重要纪念日
+     * true: 重要
+     * false: 不重要
+     */
+    private Boolean isImportant;
+    
+    /**
      * 是否提醒
      * true: 提醒
      * false: 不提醒

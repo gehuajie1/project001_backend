@@ -8,6 +8,8 @@
         <result column="name" property="name" />
         <result column="date" property="date" />
         <result column="description" property="description" />
+        <result column="is_yearly" property="isYearly" />
+        <result column="is_important" property="isImportant" />
         <result column="remind" property="remind" />
         <result column="remind_time" property="remindTime" />
         <result column="created_at" property="createdAt" />
@@ -84,9 +86,9 @@
     <!-- 插入新纪念日 -->
     <insert id="insert" parameterType="com.couple.space.entity.Anniversary" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO anniversaries (
-            user_id, name, date, description, remind, remind_time, created_at, updated_at
+            user_id, name, date, description, is_yearly, is_important, remind, remind_time, created_at, updated_at
         ) VALUES (
-            #{userId}, #{name}, #{date}, #{description}, #{remind}, #{remindTime}, 
+            #{userId}, #{name}, #{date}, #{description}, #{isYearly}, #{isImportant}, #{remind}, #{remindTime}, 
             #{createdAt}, #{updatedAt}
         )
     </insert>
@@ -97,6 +99,8 @@
         SET name = #{name},
             date = #{date},
             description = #{description},
+            is_yearly = #{isYearly},
+            is_important = #{isImportant},
             remind = #{remind},
             remind_time = #{remindTime},
             updated_at = #{updatedAt}

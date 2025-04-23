@@ -1,9 +1,17 @@
-CREATE TABLE IF NOT EXISTS anniversaries (
+-- 删除旧表
+DROP TABLE IF EXISTS anniversaries;
+
+-- 创建新表
+CREATE TABLE anniversaries (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL COMMENT '纪念日名称',
     date DATE NOT NULL COMMENT '纪念日日期',
     user_id BIGINT NOT NULL COMMENT '设置纪念日的用户ID',
     description VARCHAR(500) COMMENT '纪念日描述',
+    is_yearly BOOLEAN DEFAULT TRUE COMMENT '是否每年重复',
+    is_important BOOLEAN DEFAULT FALSE COMMENT '是否重要纪念日',
+    remind BOOLEAN DEFAULT FALSE COMMENT '是否提醒',
+    remind_time TIME COMMENT '提醒时间',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE

@@ -4,7 +4,6 @@ com\couple\space\security\JwtTokenProvider.class
 com\couple\space\security\CustomUserDetailsService.class
 com\couple\space\common\ResponseHandler.class
 com\couple\space\dto\UserDTO.class
-com\couple\space\config\JwtConfig.class
 com\couple\space\controller\UserController.class
 com\couple\space\mapper\AnniversaryMapper.class
 com\couple\space\config\CorsConfig.class
